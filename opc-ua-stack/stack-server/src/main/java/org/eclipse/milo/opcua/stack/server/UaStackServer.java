@@ -425,6 +425,7 @@ public class UaStackServer {
                         getFilteredApplicationDescription(request.getEndpointUrl())
                     )
                 )
+                .distinct() // TODO this will work once structs implement equals/hashcode
                 .collect(toList());
 
             GetEndpointsResponse response = new GetEndpointsResponse(
@@ -497,12 +498,14 @@ public class UaStackServer {
                 .stream()
                 .map(EndpointConfiguration::getEndpointUrl)
                 .filter(url -> url.endsWith("/discovery"))
+                .distinct()
                 .collect(Collectors.toList());
 
             if (allDiscoveryUrls.isEmpty()) {
                 allDiscoveryUrls = config.getEndpoints()
                     .stream()
                     .map(EndpointConfiguration::getEndpointUrl)
+                    .distinct()
                     .collect(Collectors.toList());
             }
 
@@ -521,6 +524,7 @@ public class UaStackServer {
                         return false;
                     }
                 })
+                .distinct()
                 .collect(toList());
 
 
