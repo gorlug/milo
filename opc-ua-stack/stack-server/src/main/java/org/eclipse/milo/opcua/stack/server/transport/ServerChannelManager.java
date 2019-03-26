@@ -76,6 +76,7 @@ public class ServerChannelManager {
 
                 return bootstrap.whenComplete((channel, ex) -> {
                     if (channel != null) {
+                        addresses.add(bindAddress, 1);
                         channels.put(bindAddress, channel);
                         future.complete(Unit.VALUE);
                     } else {
@@ -98,15 +99,11 @@ public class ServerChannelManager {
                 endpoint.getBindAddress(),
                 endpoint.getBindPort()
             );
-
-            if (addresses.remove(bindAddress, 1) == 1) {
-                logger.debug("unbinding from {}", bindAddress);
-
-                Channel channel = channels.remove(bindAddress);
-
-                if (channel != null) {
-                    channel.close();
-                }
+            logger.debug("unbinding from {}", bindAddress);
+            addresses.remove(bindAddress, 1);
+            Channel channel = channels.remove(bindAddress);
+            if (channel != null) {
+                channel.close();
             }
 
             future.complete(Unit.VALUE);
